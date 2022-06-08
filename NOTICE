@@ -25,6 +25,10 @@ configs/dict_action.py
 Copyright (c) 2018-2022 Open-MMLab. 
 All rights reserved.
 
+scripts/detection/models/gfocal_maedet/gfocal_r50_fpn_ms6x.py
+Copyright (c) 2018-2019 Open-MMLab. 
+All rights reserved.
+
 
 Packages installed by codes or PIP.
 ============================

@@ -92,7 +92,7 @@ Please refer to [changelog.md](docs/changelog.md) for details and release histor
     ```
 
 ***
-## How to use
+## Easy to use
 
 * **Search with examples**
     
@@ -101,7 +101,7 @@ Please refer to [changelog.md](docs/changelog.md) for details and release histor
     sh example_xxxx.sh
     ```
 
-* **Use searched models in your own training pipeline**
+<!-- * **Use searched models in your own training pipeline**
 
     **copy `nas/models` to your pipeline, then** 
     ```python
@@ -118,11 +118,11 @@ Please refer to [changelog.md](docs/changelog.md) for details and release histor
 
     # if load with pretrained model
     model.init_weights(pretrained=pretrained_pth)
-    ```
+    ``` -->
 
 ***
-## Some Results
-### Results for Classification
+## Results
+### Results for Classification, [Details are here](scripts/classification/README.md).
 
 | Backbone  | size   | Param (M) | FLOPs (G) |   Top-1 | Structure | Download |
 |:---------:|:-------:|:-------:|:-------:|:-------:|:--------:|:------:|
@@ -131,19 +131,7 @@ Please refer to [changelog.md](docs/changelog.md) for details and release histor
 | R152-like | 224 | 53.5 |    10.5     |   81.59  | [txt](scripts/classification/models/R152-like.txt)       |[model](https://idstcv.oss-cn-zhangjiakou.aliyuncs.com/LightNAS/classfication/R152-like.pth.tar) |
 
 **Note**:
-
-1. These models are trained on ImageNet dataset with 8 NVIDIA V100 GPUs.
-2. Use SGD optimizer with momentum 0.9; weight decay 5e-5 for ImageNet; initial learning rate 0.1 with 480 epochs.
-
-<!-- ### Results for Detection -->
-
-
-***
-## Citation
-
-If you find this toolbox useful, please support us by citing this work as
-
-`For Classfication, please cite this.`
+If you find this useful, please support us by citing it.
 ```
 @inproceedings{zennas,
 	title     = {Zen-NAS: A Zero-Shot NAS for High-Performance Deep Image Recognition},
@@ -152,7 +140,31 @@ If you find this toolbox useful, please support us by citing this work as
 	year      = {2021},
 }
 ```
+   <br/>
 
+***
+### Results for Object Detection, [Details are here](scripts/detection/README.md).
+| Backbone | Param (M) | FLOPs (G) |   box AP<sub>val</sub> |   box AP<sub>S</sub> |   box AP<sub>M</sub>  |   box AP<sub>L</sub> | Structure | Download |
+|:---------:|:---------:|:---------:|:-------:|:-------:|:-------:|:-------:|:--------:|:------:|
+| ResNet-50 | 23.5 |    83.6    |  44.7 | 29.1 | 48.1 | 56.6  | - | - |
+| ResNet-101| 42.4 |    159.5   |  46.3 | 29.9 | 50.1 | 58.7  | - | - |
+| MAE-DET-S | 21.2 |    48.7    |  45.1 | 27.9 | 49.1 | 58.0  | [txt](scripts/detection/models/maedet_s.txt)       |[model](https://idstcv.oss-cn-zhangjiakou.aliyuncs.com/LightNAS/detection/maedet-s/latest.pth) |
+| MAE-DET-M | 25.8 |    89.9    |  46.9 | 30.1 | 50.9 | 59.9  | [txt](scripts/detection/models/maedet_m.txt)       |[model](https://idstcv.oss-cn-zhangjiakou.aliyuncs.com/LightNAS/detection/maedet-m/latest.pth) |
+| MAE-DET-L | 43.9 |    152.9   |  47.8 | 30.3 | 51.9 | 61.1  | [txt](scripts/detection/models/maedet_l.txt)      |[model](https://idstcv.oss-cn-zhangjiakou.aliyuncs.com/LightNAS/detection/maedet-l/latest.pth) |
+
+**Note**:
+If you find this useful, please support us by citing it.
+```
+@inproceedings{maedet,
+  title={MAE-DET: Revisiting Maximum Entropy Principle in Zero-Shot NAS for Efficient Object Detection},
+  author={Zhenhong Sun, Ming Lin, Xiuyu Sun, Zhiyu Tan, Hao Li and Rong Jin},
+  booktitle={International Conference on Machine Learning},
+  year={2022},
+  organization={PMLR}
+}
+```
+
+***
 ## Main Contributors
 
-[Zhenhong Sun](https://scholar.google.com/citations?user=eDiXHP8AAAAJ), [Ming Lin](https://scholar.google.com/citations?user=08qZeTUAAAAJ), [Xiuyu Sun](https://scholar.google.com/citations?user=pc57Xd4AAAAJ).
+[Zhenhong Sun](https://scholar.google.com/citations?user=eDiXHP8AAAAJ), [Ming Lin](https://minglin-home.github.io), [Xiuyu Sun](https://scholar.google.com/citations?user=pc57Xd4AAAAJ).
