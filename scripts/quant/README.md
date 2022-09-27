@@ -27,9 +27,9 @@
 
 
 **Note**:
-
 - If searching without quantization, Budget_flops is equal to the base flops as in other tasks.
 - If searching with quantization, Budget_flops = Budget_flops_base x (Act_bit / 8bit) x (Weight_bit / 8bit). Hence, BitOps = Budget_flops x 8 x 8.
+- Imagenet training pipeline can be found at https://github.com/tinyvision/imagenet-training-pipeline
 
 
 ***
