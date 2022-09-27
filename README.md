@@ -1,3 +1,13 @@
+## News
+
+- **:sunny: Hiring research interns for Neural Architecture Search, Tiny Machine Learning, Computer Vision tasks: [xiuyu.sxy@alibaba-inc.com](xiuyu.sxy@alibaba-inc.com)**
+- :boom: 2022.09: [**Mixed-Precision Quantization**](scripts/quant/README.md) is now supported! The [**QE-Score**]() paper is accepted by NeurIPS'22.
+- :boom: 2022.06: Code for [**MAE-DET**](scripts/detection/README.md) is now released.
+- :boom: 2022.05: [**MAE-DET**](https://proceedings.mlr.press/v162/sun22c/sun22c.pdf) is accepted by ICML'22.
+- :boom: 2021.09: Code for [**Zen-NAS**](https://github.com/idstcv/ZenNAS) is now released.
+- :boom: 2021.07: The inspiring training-free paper [**Zen-NAS**](https://openaccess.thecvf.com/content/ICCV2021/papers/Lin_Zen-NAS_A_Zero-Shot_NAS_for_High-Performance_Image_Recognition_ICCV_2021_paper.pdf) has been accepted by ICCV'21.
+
+***
 ## Introduction
 
 English | [简体中文](README_zh-CN.md)
@@ -22,6 +32,8 @@ Lightweight Neural Architecture Search (Light-NAS) is an open source zero-short 
 
     **`Detection`**: Please Refer to this [Search Space](nas/spaces/space_K1KXK1.py) and [Example Shell](scripts/detection/example_R50_FLOPs.sh).
 
+    **`Quantization`**: Please Refer to this [Search Space](nas/spaces/space_quant_k1dwk1.py) and [Example Shell](scripts/quant/mixed_19d2G.sh).
+
 </details>
 
 ***
@@ -32,13 +44,14 @@ This project is developed by Alibaba and licensed under the [Apache 2.0 license]
 This product contains third-party components under other open source licenses.
 
 See the [NOTICE](NOTICE) file for more information.
+
 ***
 ## Changelog
-**1.0.0** was released in 24/03/2022:
+**1.0.2** was released in 2022/09/19:
 
-* Support entropy score for zero-shot search.
-* Support latency prediction for hardware device.
-* Support Classification and Detection tasks.
+* Support madnas score for training-free search.
+* Support mixed-precision Quantization tasks.
+* Update the searched mixed-precision models.
 
 Please refer to [changelog.md](docs/changelog.md) for details and release history.
 
@@ -135,12 +148,12 @@ If you find this useful, please support us by citing it.
 ```
 @inproceedings{zennas,
 	title     = {Zen-NAS: A Zero-Shot NAS for High-Performance Deep Image Recognition},
-	author    = {Ming Lin, Pichao Wang, Zhenhong Sun, Hesen Chen, Xiuyu Sun, Qi Qian, Hao Li and Rong Jin},
+	author    = {Ming Lin and Pichao Wang and Zhenhong Sun and Hesen Chen and Xiuyu Sun and Qi Qian and Hao Li and Rong Jin},
 	booktitle = {2021 IEEE/CVF International Conference on Computer Vision},  
 	year      = {2021},
 }
 ```
-   <br/>
+> The official code for **Zen-NAS** was originally released at https://github.com/idstcv/ZenNAS.   <br/>
 
 ***
 ### Results for Object Detection, [Details are here](scripts/detection/README.md).
@@ -156,15 +169,35 @@ If you find this useful, please support us by citing it.
 If you find this useful, please support us by citing it.
 ```
 @inproceedings{maedet,
-  title={MAE-DET: Revisiting Maximum Entropy Principle in Zero-Shot NAS for Efficient Object Detection},
-  author={Zhenhong Sun, Ming Lin, Xiuyu Sun, Zhiyu Tan, Hao Li and Rong Jin},
-  booktitle={International Conference on Machine Learning},
-  year={2022},
-  organization={PMLR}
+  title     = {MAE-DET: Revisiting Maximum Entropy Principle in Zero-Shot NAS for Efficient Object Detection},
+  author    = {Zhenhong Sun and Ming Lin and Xiuyu Sun and Zhiyu Tan and Hao Li and Rong Jin},
+  booktitle = {International Conference on Machine Learning},
+  year      = {2022},
+}
+```
+
+***
+### Results for low-precision backbones, [Details are here](scripts/quant/README.md).
+
+|Backbone|Param (MB)|BitOps (G)|ImageNet TOP1|Structure|Download|
+|:----|:----|:----|:----|:----|:----|
+|MBV2-8bit|3.4|19.2|71.90%| -| -|
+|MBV2-4bit|2.3|7|68.90%| -|- |
+|Mixed19d2G|3.2|18.8|74.80%|[txt](scripts/quant/models/mixed7d0G.txt) |[model](https://idstcv.oss-cn-zhangjiakou.aliyuncs.com/LightNAS/quant/mixed-7d0G/quant_238_70.7660.pth.tar) |
+|Mixed7d0G|2.2|6.9|70.80%|[txt](scripts/quant/models/mixed19d2G.txt) |[model](https://idstcv.oss-cn-zhangjiakou.aliyuncs.com/LightNAS/quant/mixed-19d2G/quant_237_74.8180.pth.tar) |
+
+**Note**:
+If you find this useful, please support us by citing it.
+```
+@inproceedings{qescore,
+  title     = {Entropy-Driven Mixed-Precision Quantization for Deep Network Design on IoT Devices},
+  author    = {Zhenhong Sun and Ce Ge and Junyan Wang and Ming Lin and Hesen Chen and Hao Li and Xiuyu Sun},
+  journal   = {Advances in Neural Information Processing Systems},
+  year      = {2022},
 }
 ```
 
 ***
 ## Main Contributors
 
-[Zhenhong Sun](https://scholar.google.com/citations?user=eDiXHP8AAAAJ), [Ming Lin](https://minglin-home.github.io), [Xiuyu Sun](https://scholar.google.com/citations?user=pc57Xd4AAAAJ).
+[Zhenhong Sun](https://sites.google.com/view/sunzhenhong), [Ming Lin](https://minglin-home.github.io), [Xiuyu Sun](https://sites.google.com/view/sunxiuyu), [Hesen Chen](https://scholar.google.com/citations?user=75v6J-cAAAAJ), [Ce Ge](https://scholar.google.com/citations?user=VUOriGkAAAAJ).

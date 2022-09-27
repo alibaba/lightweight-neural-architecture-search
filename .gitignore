@@ -1,0 +1,5 @@
+*.pyc
+.DS_Store
+__pycache__/
+trans_code_by_oss.sh
+save_model/

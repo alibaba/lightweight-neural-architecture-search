@@ -28,21 +28,26 @@ class Config(BaseConfig):
         self.budget_latency = None # the unit is second
         self.budget_layers = 49 # 49 for R50, 100 for R101
         self.budget_stages = 5 # Downsample
+        # Specific for mcunet
+        self.budget_mcu_max_feature = None 
 
         """ Score config """
-        self.score_type = "entropy" # entropy 
-        self.score_batch_size = 32 #
+        self.score_type = "entropy" # madnas, entropy 
+        self.score_batch_size = 32 # no need for madnas
         # 224 for Imagenet, 480 for detection, 160 for mcu
         self.score_image_size = 224 
         self.score_image_channel = 3
         self.align_budget_layers = False # reserved
         # score params for entropy score
         self.score_no_creat = False # False
-        self.score_repeat = 4 #
+        self.score_repeat = 4 # no need for madnas
         self.score_skip_relu = True # no relu in forward
         self.score_skip_bn = True # no bn in forward
         self.score_multi_ratio = [0, 0, 1, 1, 6] # weight ratio of 5 downsampling stages
-        self.score_init_std = 1 # initialization std
+        # Specific for quantization search
+        self.score_quant_search = False # wether quant search
+        self.score_init_std = 1 # quant initialization std
+        self.score_init_std_act = 1 # quant initialization std for activation
         # Score params for adding other constraits to the ACC
         self.score_flop_ratio = None # Acc = score + ration*flops/1e6
 

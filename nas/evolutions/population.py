@@ -25,7 +25,7 @@ class Population(metaclass=ABCMeta):
         self.popu_latency_list = []
         self.popu_layers_list = []
         self.popu_stages_list = []
-
+        if self.cfg.budget_mcu_max_feature is not None: self.popu_max_feature_list = []
 
     def update_population(self, model_info):
         if "score" not in model_info.keys():
@@ -52,6 +52,8 @@ class Population(metaclass=ABCMeta):
         self.popu_latency_list.insert(insert_idx,  model_info["latency"])
         self.popu_layers_list.insert(insert_idx,  model_info["layers"])
         self.popu_stages_list.insert(insert_idx,  model_info["stages"])
+        if hasattr(self, "popu_max_feature_list"): 
+            self.popu_max_feature_list.insert(insert_idx,  model_info["max_feature"])
 
 
     def rank_population(self, maintain_popu=False):
@@ -80,7 +82,8 @@ class Population(metaclass=ABCMeta):
         self.popu_latency_list = [self.popu_latency_list[idx] for idx in sort_idx]
         self.popu_layers_list = [self.popu_layers_list[idx] for idx in sort_idx]
         self.popu_stages_list = [self.popu_stages_list[idx] for idx in sort_idx]
-
+        if hasattr(self, "popu_max_feature_list"): 
+            self.popu_max_feature_list = [self.popu_max_feature_list[idx] for idx in sort_idx]
 
     def gen_random_structure_net(self,):
         pass
@@ -97,7 +100,8 @@ class Population(metaclass=ABCMeta):
             self.popu_latency_list += popu_nas_info.popu_latency_list
             self.popu_layers_list += popu_nas_info.popu_layers_list
             self.popu_stages_list += popu_nas_info.popu_stages_list
-
+            if hasattr(self, "popu_max_feature_list"): 
+                self.popu_max_feature_list += popu_nas_info.popu_max_feature_list
 
         if isinstance(popu_nas_info, dict):
             if update_num: self.num_evaluated_nets_count = popu_nas_info["num_evaluated_nets_count"]
@@ -109,6 +113,8 @@ class Population(metaclass=ABCMeta):
             self.popu_latency_list += popu_nas_info["popu_latency_list"]
             self.popu_layers_list += popu_nas_info["popu_layers_list"]
             self.popu_stages_list += popu_nas_info["popu_stages_list"]
+            if hasattr(self, "popu_max_feature_list"): 
+                self.popu_max_feature_list += popu_nas_info["popu_max_feature_list"]
 
         self.rank_population(maintain_popu=True)
 
@@ -126,6 +132,8 @@ class Population(metaclass=ABCMeta):
         popu_nas_info["popu_latency_list"] = self.popu_latency_list
         popu_nas_info["popu_layers_list"] = self.popu_layers_list
         popu_nas_info["popu_stages_list"] = self.popu_stages_list
+        if hasattr(self, "popu_max_feature_list"): 
+            popu_nas_info["popu_max_feature_list"] = self.popu_max_feature_list
         
         return popu_nas_info
 
@@ -142,5 +150,7 @@ class Population(metaclass=ABCMeta):
         individual_info["latency"] = self.popu_latency_list[idx]
         individual_info["layers"] = self.popu_layers_list[idx]
         individual_info["stages"] = self.popu_stages_list[idx]
+        if hasattr(self, "popu_max_feature_list"): 
+            individual_info["max_feature"] = self.popu_max_feature_list[idx]
         
         return individual_info

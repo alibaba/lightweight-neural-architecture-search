@@ -129,6 +129,10 @@ class BuildNAS(metaclass=ABCMeta):
             self.logger.debug('*** debug: rank={}, random structure latency too large. \n  with the stucture={}'.format(self.cfg.rank, model_info))
             return False
 
+        if self.cfg.budget_mcu_max_feature is not None and self.cfg.budget_mcu_max_feature < model_info["max_feature"]:
+            self.logger.debug('*** debug: rank={}, random structure max_feature too large. \n  with the stucture={}'.format(self.cfg.rank, model_info))
+            return False
+
         return True
 
 
@@ -140,7 +144,7 @@ class BuildNAS(metaclass=ABCMeta):
                 structure_str=structure_str, structure_txt=structure_txt, block_module=self.cfg.space_block_module, 
                 dropout_channel=self.cfg.space_dropout_channel, dropout_layer=self.cfg.space_dropout_layer, 
                 out_indices=self.cfg.out_indices, classfication=self.cfg.space_classfication, 
-                no_create=self.cfg.score_no_creat)
+                no_create=self.cfg.score_no_creat, quant_search=self.cfg.score_quant_search)
 
         if flop_thop:
             input_D = torch.randn(1, self.cfg.budget_image_channel, self.cfg.budget_image_size, self.cfg.budget_image_size)
@@ -155,6 +159,10 @@ class BuildNAS(metaclass=ABCMeta):
         model_info["layers"] = model.get_num_layers()
         model_info["stages"] = model.get_num_stages()
         model_info["latency"] = self.do_benchmark(model)
+        if self.cfg.budget_mcu_max_feature is not None: 
+            self.logger.debug("max_feature_list=%s"%model.get_max_feature_num(self.cfg.budget_image_size))
+            self.logger.debug("params_list=%s"%model.get_model_size(return_list=True))
+            model_info["max_feature"] = np.max(model.get_max_feature_num(self.cfg.budget_image_size))
         model_info["is_satify_budget"] = self.is_satify_budget(model_info)
 
         if model_info["is_satify_budget"]: model_info["score"] = self.do_compute_nas_score(model)

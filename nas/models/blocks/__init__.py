@@ -11,4 +11,3 @@ __all_blocks__ = {
     'ResK1DWK1': ResK1DWK1,
     'SuperResK1DWK1': SuperResK1DWK1,
 }
-

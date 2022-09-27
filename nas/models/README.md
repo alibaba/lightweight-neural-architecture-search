@@ -1,11 +1,14 @@
 ## Models Definition module
 
-The basic network defined by the unified framework with the structure info list. Masternet is the overall backbone network, which is composed of differet downsample stages with structure info list. A stage is composed of several blocks, such as Resnet bottleneck block, MobileV2 Depthwise block. Basic block is composed of 2D and 3D convolutions. 
+The basic network defined by the unified framework with the structure info list.
+- Masternet is the overall backbone network, which is composed of differet downsample stages with structure info list. 
+- A stage is composed of several blocks, such as Resnet bottleneck block and MobileV2 Depthwise block.
+- Basic block is composed of 2D convolutions. 
 
 ***
 ### **Masternet**
-* **`masternet.py`**: Define the backbone network for classification and detection.
-* **`masterxxx.py`**: You can define your own backbone network for other tasks.
+- **`masternet.py`**: Define the backbone network for classification and detection.
+- **`masterxxx.py`**: You can define your own backbone network for other tasks.
 
 ***
 ### **Typical Structure Info List**
@@ -30,9 +33,14 @@ __all_blocks__ = {
     'SuperResK1DWK1': SuperResK1DWK1,
 }
 ```
+**Note**:
+
+- `BaseSuperBlock` is the basic class for super block.
+- `SuperResConvK1KXK1` is the derived class from ``BaseSuperBlock`` to unit `L` class `ResConvK1KXK1`.
+- `SuperResK1DWK1` is the derived class from ``BaseSuperBlock`` to unit `L` class `ResK1DWK1`.
 
 ***
-### **Useful functions**
+### **Useful functions for masternet**
 
 `get_model_size`: Get the number of parameters of the network
 
@@ -44,6 +52,8 @@ __all_blocks__ = {
 
 `get_params_for_trt`: Get the paramters of the network for latency prediction.
 
-`entropy_forward_pre_GAP`: Get the entropy score of the network, which need forwards on GPU.
+`entropy_forward_pre_GAP`: Get the entropy score of the network, which need forward on GPU.
 
-***
+`madnas_forward_pre_GAP`: Get the madnas score of the network, which does not need forward on GPU and runs very fast compared with entropy score.
+
+`get_max_feature_num`: Get the number of max feature map for MCU.

@@ -72,10 +72,9 @@ If you use this toolbox in your research, please cite the paper.
 
 ```
 @inproceedings{maedet,
-  title={MAE-DET: Revisiting Maximum Entropy Principle in Zero-Shot NAS for Efficient Object Detection},
-  author={Zhenhong Sun, Ming Lin, Xiuyu Sun, Zhiyu Tan, Hao Li and Rong Jin},
-  booktitle={International Conference on Machine Learning},
-  year={2022},
-  organization={PMLR}
+  title     = {MAE-DET: Revisiting Maximum Entropy Principle in Zero-Shot NAS for Efficient Object Detection},
+  author    = {Zhenhong Sun and Ming Lin and Xiuyu Sun and Zhiyu Tan and Hao Li and Rong Jin},
+  booktitle = {International Conference on Machine Learning},
+  year      = {2022},
 }
 ```

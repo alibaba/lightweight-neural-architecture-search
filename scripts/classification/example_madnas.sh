@@ -7,14 +7,14 @@ image_size=224
 
 flops="${1:-"41e8"}"
 layers="${2:-"49"}"
-name=entropy
+name=madnas
 work_dir=save_model/LightNAS/example/${name}
 
 mkdir -p ${work_dir}
 
 space_mutation="space_K1KXK1"
 cp nas/spaces/${space_mutation}.py ${work_dir}
-cp scripts/classification/example_entropy.sh ${work_dir}
+cp scripts/classification/example_madnas.sh ${work_dir}
 
 
 echo "[\
@@ -32,6 +32,6 @@ mpirun --allow-run-as-root -np 1 -H 127.0.0.1:8 -bind-to none -map-by slot -mca 
   python nas/search.py configs/config_nas.py --work_dir ${work_dir} --cfg_options \
   task="classification" lat_pred=False only_master=True log_level="DEBUG" \
   budget_image_size=${image_size} budget_flops=${flops} budget_layers=${layers} \
-  score_image_size=${image_size} score_multi_ratio=[0,0,0,0,1] score_repeat=4 score_type="entropy" \
+  score_image_size=${image_size} score_multi_ratio=[0,0,0,0,1] score_type="madnas" \
   space_block_num=2 space_classfication=True space_mutation=${space_mutation} \
   space_structure_txt=${work_dir}/init_structure.txt

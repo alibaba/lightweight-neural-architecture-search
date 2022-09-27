@@ -37,6 +37,7 @@ class ComputeEntropyScore(metaclass=ABCMeta):
     def __init__(self, cfg, logger=None):
         self.gpu = cfg.gpu
         self.init_std = cfg.score_init_std
+        self.init_std_act = cfg.score_init_std_act
         self.batch_size = cfg.score_batch_size
         self.resolution = cfg.score_image_size
         self.in_ch = cfg.score_image_channel
@@ -110,10 +111,10 @@ class ComputeEntropyScore(metaclass=ABCMeta):
 
         for repeat_count in range(self.repeat):
             network_weight_gaussian_init(model, std=self.init_std)
-            input = self.init_std*torch.randn(size=[self.batch_size, self.in_ch, self.resolution, self.resolution], device=device, dtype=torch.float32)
+            input = self.init_std_act*torch.randn(size=[self.batch_size, self.in_ch, self.resolution, self.resolution], device=device, dtype=torch.float32)
             # print("\ninitial input std: mean %.4f, std %.4f, max %.4f, min %.4f\n"%(
                     # input.mean().item(), input.std().item(), input.max().item(), input.min().item()))
-            kwarg = {"init_std":self.init_std,}
+            kwarg = {"init_std":self.init_std, "init_std_act":self.init_std_act}
             stage_features_list, block_std_list = model.entropy_forward_pre_GAP(input, skip_relu=self.skip_relu, skip_bn=self.skip_bn, **kwarg)
             nas_score_once = self.ratio_score(stage_features_list, block_std_list)
             nas_score_list.append(nas_score_once)

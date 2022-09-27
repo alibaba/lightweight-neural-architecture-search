@@ -53,7 +53,7 @@ If you find this toolbox useful, please support us by citing this work as
 ```
 @inproceedings{zennas,
 	title     = {Zen-NAS: A Zero-Shot NAS for High-Performance Deep Image Recognition},
-	author    = {Ming Lin, Pichao Wang, Zhenhong Sun, Hesen Chen, Xiuyu Sun, Qi Qian, Hao Li and Rong Jin},
+	author    = {Ming Lin and Pichao Wang and Zhenhong Sun and Hesen Chen and Xiuyu Sun and Qi Qian and Hao Li and Rong Jin},
 	booktitle = {2021 IEEE/CVF International Conference on Computer Vision},  
 	year      = {2021},
 }

@@ -5,7 +5,7 @@ import random, copy, bisect
 
 
 stem_mutate_method_list = ['out']
-mutate_method_list = ['out', 'k', 'btn', 'L']
+mutate_method_list = ['out', 'k', 'btn', 'L', 'nbits']
 # last_block_mutate_method_list = ['btn', 'L']
 
 the_maximum_channel = 1280
@@ -13,9 +13,9 @@ the_maximum_stem_channel = 32
 search_kernel_size_list = [3, 5]
 search_layer_list = [-2, -1, 1, 2]
 search_channel_list = [2.0, 1.5, 1.25, 0.8, 0.6, 0.5]
-search_nbits_list = [2, 3, 4, 5, 6, 8]
+search_nbits_list = [3, 4, 5, 6]
 nbits_mutate_ratio = 0.1 # random uniform 0~1, if bigger then mutate
-search_btn_ratio_list = [1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 5.0, 6.0]
+search_btn_ratio_list = [1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
 
 
 def smart_round(x, base=8):
@@ -74,12 +74,74 @@ def check_btn(btn_ratio):
     else:
         return btn_ratio
 
+def mutate_nbits(nbits):
+    # avoid the endless loop
+    if len(search_nbits_list)==1 and nbits in search_nbits_list:
+        return nbits
+    ind = search_nbits_list.index(nbits)
+    new_ind = ind
+
+    while new_ind == ind:
+        new_ind = random.choice((ind - 1, ind + 1))
+        new_ind = max(0, new_ind)
+        new_ind = min(len(search_nbits_list) - 1, new_ind)
+    return search_nbits_list[new_ind]
+
+
+# def mutate_nbits_list(nbits_list):
+#     if isinstance(nbits_list, int):
+#         return mutate_nbits(nbits_list)
+#     else:
+#         # mutate 1/3 elements in nbits_list, the minimum number is 1
+#         random_num = len(nbits_list)//3 if len(nbits_list)>=3 else 1
+#         idx_list = random.sample(range(len(nbits_list)), random_num)
+#         for idx in idx_list:
+#             if random.uniform(0, 1)>nbits_mutate_ratio:
+#                 nbits_list[idx] = mutate_nbits(nbits_list[idx])
+#         return nbits_list
+
+
+def mutate_nbits_list(nbits_list, L):
+    if isinstance(nbits_list, int):
+        return mutate_nbits(nbits_list)
+    else:
+        inner_layer = len(nbits_list)//L
+        for layer_idx in range(L):
+            if random.uniform(0, 1)>nbits_mutate_ratio:
+                nbits_list[layer_idx*inner_layer:(layer_idx+1)*inner_layer] = \
+                [mutate_nbits(nbits_list[layer_idx*inner_layer])]*inner_layer
+        return nbits_list
+
+
+def revise_nbits_for_layers(old_L, new_L, structure_info):
+    nbitsA = structure_info["nbitsA"][0]
+    nbitsW = structure_info["nbitsW"][0]
+    inner_layers = len(structure_info["nbitsA"])//old_L
+    if inner_layers not in [2, 3]:
+        raise ValueError("inner_layers must be 2 or 3 for current superblock, not %d"%(inner_layers))
+        
+    if old_L<new_L:
+        extra_l = new_L-old_L
+        structure_info['nbitsA'] += [nbitsA]*inner_layers*extra_l
+        structure_info['nbitsW'] += [nbitsW]*inner_layers*extra_l
+    else:
+        structure_info['nbitsA'] = structure_info['nbitsA'][:new_L*inner_layers]
+        structure_info['nbitsW'] = structure_info['nbitsW'][:new_L*inner_layers]
+
+    return structure_info
+
 
 def mutate_function(block_id, structure_info_list, budget_layers, minor_mutation=False):
 
     structure_info = structure_info_list[block_id]
     #  Add the constraint: never change the last output channel
     if block_id == len(structure_info_list)-1:
+        if "nbitsA" not in structure_info or "nbitsW" not in structure_info:
+            raise NameError("structure_info must have nbitsA and nbitsW\n%s"%(structure_info))
+        new_nbitsA = mutate_nbits(structure_info['nbitsA'])
+        new_nbitsW = mutate_nbits(structure_info['nbitsW'])
+        structure_info['nbitsA'] = new_nbitsA
+        structure_info['nbitsW'] = new_nbitsW
         return [structure_info]
     if block_id < len(structure_info_list)-1: 
         structure_info_next = structure_info_list[block_id+1]
@@ -134,6 +196,14 @@ def mutate_function(block_id, structure_info_list, budget_layers, minor_mutation
             new_btn = smart_round(structure_info['out']*new_btn_ratio) 
             structure_info['btn'] = new_btn
 
+        if random_mutate_method == 'nbits':
+            if "nbitsA" not in structure_info or "nbitsW" not in structure_info:
+                raise NameError("structure_info must have nbitsA and nbitsW\n%s"%(structure_info))
+            new_nbitsA_list = mutate_nbits_list(structure_info['nbitsA'], structure_info['L'])
+            new_nbitsW_list = mutate_nbits_list(structure_info['nbitsW'], structure_info['L'])
+            structure_info['nbitsA'] = new_nbitsA_list
+            structure_info['nbitsW'] = new_nbitsW_list
+
         if random_mutate_method == 'L':
             old_L = copy.deepcopy(structure_info['L'])
             new_L = mutate_layer(structure_info['L'])
@@ -144,6 +214,9 @@ def mutate_function(block_id, structure_info_list, budget_layers, minor_mutation
             else:
                 new_L = min(int(budget_layers//3//(len(structure_info_list)-3)), new_L)
             
+            if new_L!=old_L:
+                structure_info = revise_nbits_for_layers(old_L, new_L, structure_info)
+
             structure_info['L'] = new_L
         
         return [structure_info]

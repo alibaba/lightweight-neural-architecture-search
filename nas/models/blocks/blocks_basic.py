@@ -7,6 +7,19 @@ import numpy as np
 from torch import nn, Tensor
 from torch.nn import functional as F
 
+from .qconv import QConv2d
+
+
+STD_BITS_LUT = {
+    1: {2: 1.0089193649965897, 3: 1.0408034134404924, 4: 1.0408329944621844, 5: 1.0408329944621846, 6: 1.0408329944621846, 7: 1.0408329944621846, 8: 1.0408329944621846}, 
+    2: {2: 1.470493611987268, 3: 1.9441392428674842, 4: 2.020625612100753, 5: 2.020725942163689, 6: 2.0207259421636903, 7: 2.0207259421636903, 8: 2.0207259421636903}, 
+    3: {2: 1.6488958630350534, 3: 2.538810044255356, 4: 2.9936671208664336, 5: 3.0138566423355098, 6: 3.013856886670854, 7: 3.013856886670854, 8: 3.013856886670854}, 
+    4: {2: 1.7388228634059972, 3: 2.8903940182483057, 4: 3.8504712566997665, 5: 4.010172973403067, 6: 4.010403138505318, 7: 4.010403138505321, 8: 4.010403138505321},
+    5: {2: 1.7924496624207404, 3: 3.112192524683381, 4: 4.528190206368193, 5: 5.0020480504267, 6: 5.008326399730913, 7: 5.008326400438906, 8: 5.008326400438906}, 
+    6: {2: 1.8279355957465278, 3: 3.2624595365613334, 4: 5.046533952705038, 5: 5.965323558459142, 6: 6.006939888476478, 7: 6.006940430313366, 8: 6.006940430313366}, 
+    8: {2: 1.8718895621820542, 3: 3.45101648516446, 4: 5.755434102119865, 5: 7.6819204526202745, 6: 8.004730132702088, 7: 8.005206639015208, 8: 8.005206639015217}, 
+    12: {2: 1.915289815677668, 3: 3.6382645717164728, 4: 6.507222754600756, 5: 10.077501629698418, 6: 11.919610277123745, 7: 12.003470607624022, 8: 12.003471720020558}, 
+    16: {2: 1.936748155491386, 3: 3.7306952212335203, 4: 6.888695319518398, 5: 11.498183425186014, 6: 15.354315080598655, 7: 16.001642665300874, 8: 16.00260395477351}}
 
 def network_weight_stupid_init(net: nn.Module):
     with torch.no_grad():
@@ -88,17 +101,21 @@ class Swish(nn.Module):
         return x * torch.sigmoid(x)
 
 
+def swish(x: Tensor) -> Tensor:
+    return x * F.sigmoid(x)
+
+
 def get_activation(name="relu"):
     if name == "sigmoid":
-        module = torch.sigmoid
+        module = F.sigmoid
     elif name == "relu":
-        module = torch.ReLU
+        module = F.relu
     elif name == "relu6":
-        module = torch.ReLU6
+        module = F.relu6
     elif name == "swish":
-        module = Swish
+        module = swish
     elif name == "learkyrelu":
-        module = torch.LeakyReLU
+        module = F.leaky_relu
     else:
         raise AttributeError("Unsupported act type: {}".format(name))
     return module
@@ -117,6 +134,8 @@ class ConvKXBN(nn.Module):
             's': stride (default=1),
             'k': kernel_size,
             'p': padding (default=(k-1)//2,
+            'nbitsA': input activation quant nbits (default=8),
+            'nbitsW': weight quant nbits (default=8),
         }
         :param NAS_mode:
         '''
@@ -134,6 +153,13 @@ class ConvKXBN(nn.Module):
         self.dropout_channel = dropout_channel
         self.dropout_layer = dropout_layer
 
+        if "nbitsA" in structure_info and "nbitsW" in structure_info:
+            self.quant = True
+            self.nbitsA = structure_info["nbitsA"]
+            self.nbitsW = structure_info["nbitsW"]
+        else:
+            self.quant = False
+
         if 'g' in structure_info:
             self.groups = structure_info['g']
         else:
@@ -150,13 +176,23 @@ class ConvKXBN(nn.Module):
         if self.no_create:
             self.block = None
         else:
-            self.conv1 = nn.Conv2d(self.in_channels, self.out_channels, self.kernel_size, self.stride,
+            if self.quant:
+                self.conv1 = QConv2d(self.in_channels, self.out_channels, self.kernel_size, self.stride, self.padding,
+                            groups=self.groups, bias=False, nbitsA=self.nbitsA , nbitsW=self.nbitsW, quan_type='lsq', positive=False, **kwargs)
+            else:
+                self.conv1 = nn.Conv2d(self.in_channels, self.out_channels, self.kernel_size, self.stride,
                           padding=self.padding, groups=self.groups, bias=False)
             self.bn1 = nn.BatchNorm2d(self.out_channels)
             
-        self.model_size = self.model_size + self.in_channels * self.out_channels * self.kernel_size**2 / self.groups\
+        if self.quant:
+            self.model_size = self.model_size + self.in_channels * self.out_channels * self.kernel_size**2 / self.groups * self.nbitsW/8 \
                            + 2 * self.out_channels
-        self.flops = self.flops + self.in_channels * self.out_channels * self.kernel_size**2 / self.stride**2 / self.groups \
+            self.flops = self.flops + self.in_channels * self.out_channels * self.kernel_size**2 / self.stride**2 / self.groups \
+                      * self.nbitsA * self.nbitsW / 8 / 8 + 2 * self.out_channels / self.stride**2
+        else:
+            self.model_size = self.model_size + self.in_channels * self.out_channels * self.kernel_size**2 / self.groups\
+                           + 2 * self.out_channels
+            self.flops = self.flops + self.in_channels * self.out_channels * self.kernel_size**2 / self.stride**2 / self.groups \
                       + 2 * self.out_channels / self.stride**2
 
 
@@ -167,8 +203,11 @@ class ConvKXBN(nn.Module):
             output = F.dropout(output, self.dropout_channel, self.training)
         return output
 
-    def get_model_size(self):
-        return self.model_size
+    def get_model_size(self, return_list=False):
+        if return_list:
+            return [self.model_size]
+        else:
+            return self.model_size
 
     def get_flops(self, resolution):
         return self.flops * resolution**2
@@ -191,6 +230,20 @@ class ConvKXBN(nn.Module):
     def get_num_channels_list(self):
         return [self.out_channels]
 
+    def get_max_feature_num(self, resolution, nbitsA_out=8):
+        
+        nbitsA_in = self.nbitsA if self.quant else 8
+        if self.groups == 1:
+            max_feature = resolution**2*self.in_channels*nbitsA_in/8 + resolution**2*self.out_channels//(self.stride**2)*nbitsA_out/8
+        elif self.groups == self.out_channels:
+            max_feature = resolution**2*self.in_channels*nbitsA_in/8 + resolution**2//(self.stride**2)*nbitsA_out/8 # TinyEngine-style
+            #max_feature = resolution**2*self.in_channels + resolution**2*self.out_channels//(self.stride**2) # Multiplex channel feature
+        else:
+            raise ValueError('Conv or DepthWise are supported in max_feature_num, not Group Conv.')
+        
+
+        return max_feature
+
 
 class ConvKXBNRELU(ConvKXBN):
     def __init__(self, structure_info, no_create=False,
@@ -206,6 +259,8 @@ class ConvKXBNRELU(ConvKXBN):
             'k': kernel_size,
             'p': padding (default=(k-1)//2,
             'g': grouping (default=1),
+            'nbitsA': input activation quant nbits (default=8),
+            'nbitsW': weight quant nbits (default=8),
             'act': activation (default=relu),
         }
         :param NAS_mode:
@@ -233,10 +288,23 @@ class ConvKXBNRELU(ConvKXBN):
         output = self.conv1(x)
         output_std_list = []
         if not skip_bn: output = self.bn1(output)
+        if self.dropout_channel is not None:
+            output = F.dropout(output, self.dropout_channel, self.training)
         if not skip_relu: output = self.activation_function(output)
-        output_std_list.append(output.std())
-        output = output/(output.std())
+        if "init_std_act" in kwarg and hasattr(self, "nbitsA"):
+            output_std_list.append(output.std()/kwarg["init_std_act"])
+            output = output/(output.std()/kwarg["init_std_act"])
+        else:
+            output_std_list.append(output.std())
+            output = output/(output.std())
         return output, output_std_list
+
+    def get_log_zen_score(self, **kwarg):
+        if "init_std" in kwarg and "init_std_act" in kwarg and hasattr(self, "nbitsA"):
+            conv_std = np.log(STD_BITS_LUT[kwarg["init_std_act"]][self.nbitsA]*STD_BITS_LUT[kwarg["init_std"]][self.nbitsW])-np.log(kwarg["init_std_act"])
+            return [np.log(np.sqrt(self.in_channels * self.kernel_size**2))+conv_std]
+        else:
+            return [np.log(np.sqrt(self.in_channels * self.kernel_size**2))]
 
 
 class BaseSuperBlock(nn.Module):
@@ -256,7 +324,9 @@ class BaseSuperBlock(nn.Module):
             'btn':, bottleneck_channels,
             'L': num_inner_layers,
             'inner_class': inner_class,
-            'force_resproj_skip': force_resproj_skip (default=4),            
+            'force_resproj_skip': force_resproj_skip (default=4),
+            'nbitsA': input activation quant nbits list(default=8),
+            'nbitsW': weight quant nbits list(default=8),          
         }
         :param NAS_mode:
         '''
@@ -282,6 +352,14 @@ class BaseSuperBlock(nn.Module):
         self.dropout_layer = dropout_layer
 
         assert self.stride == 1 or self.stride == 2
+
+        if "nbitsA" in structure_info and "nbitsW" in structure_info:
+            self.quant = True
+            self.nbitsA = structure_info["nbitsA"]
+            self.nbitsW = structure_info["nbitsW"]
+            self.inner_layers = len(structure_info["nbitsA"])//self.num_inner_layers
+        else:
+            self.quant = False
 
         if 'g' in structure_info:
             self.groups = structure_info['g']
@@ -329,6 +407,9 @@ class BaseSuperBlock(nn.Module):
             inner_structure_info['force_resproj'] = force_resproj
 
             inner_structure_info['class'] = inner_structure_info['inner_class']
+            if self.quant:
+                inner_structure_info['nbitsA'] = structure_info['nbitsA'][block_id*self.inner_layers:(block_id+1)*self.inner_layers]
+                inner_structure_info['nbitsW'] = structure_info['nbitsW'][block_id*self.inner_layers:(block_id+1)*self.inner_layers]
 
             the_block = self.inner_class(structure_info=inner_structure_info,
                                          no_create=no_create,
@@ -360,7 +441,12 @@ class BaseSuperBlock(nn.Module):
         return output, inner_layer_features
 
 
-    def get_model_size(self):
+    def get_model_size(self, return_list=False):
+        if return_list:
+            model_size_list = []
+            for block_id, block in enumerate(self.block_list):
+                model_size_list += block.get_model_size(return_list)
+            return model_size_list
         return self.model_size
 
 
@@ -432,6 +518,23 @@ class BaseSuperBlock(nn.Module):
         sym_flops = sym_flops + self.block_list[1].get_flops(resolution) * (self.num_inner_layers - 1)
         return sym_flops
 
+    def get_max_feature_num(self, resolution, nbitsA_out=8):
+        the_res = resolution
+        max_featmap_list = []
+
+        for idx, the_block in enumerate(self.block_list, 0):
+            if self.quant:
+                if idx < len(self.block_list)-1:
+                    nbitsA_next = self.block_list[idx+1].nbitsA[0]
+                else:
+                    nbitsA_next = nbitsA_out
+            else:
+                nbitsA_next = 8
+            temp_featmap_list = the_block.get_max_feature_num(the_res, nbitsA_out=nbitsA_next)
+            the_res = the_block.get_output_resolution(the_res)
+            max_featmap_list += temp_featmap_list
+
+        return max_featmap_list
 
 __module_blocks__ = {
     'ConvKXBN': ConvKXBN,

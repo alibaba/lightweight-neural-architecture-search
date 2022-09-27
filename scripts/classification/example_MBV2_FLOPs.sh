@@ -4,7 +4,7 @@ set -e
 cd ../../
 
 name=mbv2_flops300e6
-work_dir=../save_model/LightNAS/classification/${name}
+work_dir=save_model/LightNAS/classification/${name}
 
 mkdir -p ${work_dir}
 space_mutation="space_k1dwk1"

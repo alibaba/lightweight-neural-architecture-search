@@ -10,6 +10,7 @@ from torch.nn import functional as F
 import ast, argparse
 
 from .blocks import __all_blocks__, network_weight_stupid_init
+from .blocks.qconv import QLinear
 
 
 def parse_cmd_args(argv):
@@ -123,6 +124,11 @@ class MasterNet(nn.Module):
             self.structure_info = ast.literal_eval(self.structure_str)
             assert isinstance(self.structure_info, list)
 
+        if "nbitsA" in self.structure_info[0] and "nbitsW" in self.structure_info[0]:
+            self.quant = True
+        else:
+            self.quant = False
+
         self.no_create = no_create
 
         if isinstance(self.block_module, str):
@@ -138,7 +144,10 @@ class MasterNet(nn.Module):
         pass
 
         if self.classfication: # output for the classfication task
-            self.fc_linear = nn.Linear(self.block_list[-1].out_channels, self.num_classes, bias=True)
+            if self.quant:
+                self.fc_linear = QLinear(self.block_list[-1].out_channels, self.num_classes, bias=True, nbits=8)
+            else:
+                self.fc_linear = nn.Linear(self.block_list[-1].out_channels, self.num_classes, bias=True)
             
             network_weight_stupid_init(self.fc_linear)
 
@@ -209,14 +218,21 @@ class MasterNet(nn.Module):
         return output, inner_layer_features
 
 
-    def get_model_size(self):
+    def get_model_size(self, return_list=False):
         model_size = 0
+        model_size_list = []
         for block in self.block_list:
             model_size += block.get_model_size()
+            model_size_list += block.get_model_size(return_list=True)
 
-        if self.classfication: model_size += self.block_list[-1].out_channels * self.num_classes + self.num_classes  # for fc_linear
-
-        return model_size
+        if self.classfication: 
+            model_size += self.block_list[-1].out_channels * self.num_classes + self.num_classes  # for fc_linear
+            model_size_list.append(self.block_list[-1].out_channels * self.num_classes + self.num_classes)
+        
+        if return_list:
+            return model_size_list
+        else:
+            return model_size
 
 
     def get_flops(self, resolution):
@@ -302,3 +318,38 @@ class MasterNet(nn.Module):
                 stage_features_list.append(output)
             block_std_list += output_std_list_plain
         return stage_features_list, block_std_list
+
+
+    def madnas_forward_pre_GAP(self, **kwarg):
+        # BN must be removed when calculated the entropy, block is the small unit
+        block_std_list = []
+        for idx, the_block in enumerate(self.block_list):
+            output_std_list_plain = the_block.get_log_zen_score(**kwarg)
+            block_std_list += output_std_list_plain
+        return block_std_list
+
+
+    def get_max_feature_num(self, resolution, nbitsA_out=8):
+        the_res = resolution
+        max_featmap_list = []
+
+        for idx, the_block in enumerate(self.block_list, 0):
+            if self.quant:
+                if idx < len(self.block_list)-1:
+                    # import pdb;pdb.set_trace()
+                    if type(self.block_list[idx+1].nbitsA)==list:
+                        nbitsA_next = self.block_list[idx+1].nbitsA[0]
+                    else:
+                        nbitsA_next = self.block_list[idx+1].nbitsA
+                else:
+                    nbitsA_next = nbitsA_out
+            else:
+                nbitsA_next = 8
+            temp_featmap_list = the_block.get_max_feature_num(the_res, nbitsA_out=nbitsA_next)
+            the_res = the_block.get_output_resolution(the_res)
+            if isinstance(temp_featmap_list, list):
+                max_featmap_list += temp_featmap_list
+            else:
+                max_featmap_list.append(temp_featmap_list)
+
+        return max_featmap_list

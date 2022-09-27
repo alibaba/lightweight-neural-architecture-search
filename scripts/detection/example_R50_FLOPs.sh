@@ -4,7 +4,7 @@ set -e
 cd ../../
 
 name=R50_R480_FLOPs188e8
-work_dir=../save_model/LightNAS/detection/${name}
+work_dir=save_model/LightNAS/detection/${name}
 
 mkdir -p ${work_dir}
 space_mutation="space_K1KXK1"

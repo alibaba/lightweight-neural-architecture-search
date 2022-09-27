@@ -1,6 +1,8 @@
 ## Population module
 
-    Currently, Only a simple population class is implemented, which maintain the Populaiton. The information in Population consists of different ranked list, including Structure_info, ACC, Score, Paramters, FLOPs, Latency, Layers, Stages. More information for the candidate structure could be added freely.
+Currently, Only a simple population class is implemented, which maintain the Populaiton. The information in Population consists of different ranked list, including Structure_info, ACC, Score, Paramters, FLOPs, Latency, Layers, Stages. More information for the candidate structure could be added freely.
+
+***
 
 * **Population Class**
 

@@ -24,7 +24,9 @@ class ResK1DWK1(nn.Module):
             'k': kernel_size,
             'p': padding (default=(k-1)//2,
             'g': grouping (default=1),
-            'btn': bottleneck_channels,            
+            'btn': bottleneck_channels,
+            'nbitsA': input activation quant nbits list(default=8),
+            'nbitsW': weight quant nbits list(default=8),         
             'act': activation (default=relu),
         }
         :param NAS_mode:
@@ -54,6 +56,16 @@ class ResK1DWK1(nn.Module):
         else:
             self.force_resproj = False
 
+        if "nbitsA" in structure_info and "nbitsW" in structure_info:
+            self.quant = True
+            self.nbitsA = structure_info["nbitsA"]
+            self.nbitsW = structure_info["nbitsW"]
+            if len(self.nbitsA)!=3 or len(self.nbitsW)!=3:
+                raise ValueError("nbitsA/W must has three elements in %s, not nbitsA %d or nbitsW %d"%
+                        (self.__class__, len(self.nbitsA), len(self.nbitsW)))
+        else:
+            self.quant = False
+
         if 'g' in structure_info:
             self.groups = structure_info['g']
         else:
@@ -75,7 +87,10 @@ class ResK1DWK1(nn.Module):
                             's': self.stride, 'g': self.bottleneck_channels, 'p': self.padding}
         conv3_info = {'in': self.bottleneck_channels, 'out': self.out_channels, 'k': 1,
                             's': 1, 'g': self.groups, 'p': 0}
-
+        if self.quant:
+            conv1_info = {**conv1_info, **{"nbitsA":self.nbitsA[0], "nbitsW":self.nbitsW[0]}}
+            conv2_info = {**conv2_info, **{"nbitsA":self.nbitsA[1], "nbitsW":self.nbitsW[1]}}
+            conv3_info = {**conv3_info, **{"nbitsA":self.nbitsA[2], "nbitsW":self.nbitsW[2]}}
 
         self.conv1 = ConvKXBN(conv1_info, no_create=no_create, **kwargs)
         self.conv2 = ConvKXBN(conv2_info, no_create=no_create, **kwargs)
@@ -103,7 +118,11 @@ class ResK1DWK1(nn.Module):
                 self.residual_proj = nn.Identity()
 
         elif self.force_resproj:
-            self.residual_proj = ConvKXBN({'in': self.in_channels, 'out': self.out_channels, 'k': 1,
+            if self.quant:
+                self.residual_proj = ConvKXBN({'in': self.in_channels, 'out': self.out_channels, 'k': 1,
+                                           's': 1, 'g': 1, 'p': 0, "nbitsA":self.nbitsA[0], "nbitsW":self.nbitsW[0]}, no_create=no_create)
+            else:
+                self.residual_proj = ConvKXBN({'in': self.in_channels, 'out': self.out_channels, 'k': 1,
                                            's': 1, 'g': 1, 'p': 0}, no_create=no_create)
             self.model_size += self.residual_proj.get_model_size()
             self.flops += self.residual_proj.get_flops(1.0 / self.stride) + self.out_channels / self.stride ** 2
@@ -162,8 +181,11 @@ class ResK1DWK1(nn.Module):
         return output
 
 
-    def get_model_size(self):
-        return self.model_size
+    def get_model_size(self, return_list=False):
+        if return_list:
+            return self.conv1.get_model_size(return_list)+self.conv2.get_model_size(return_list)+self.conv3.get_model_size(return_list)
+        else:
+            return self.model_size
 
 
     def get_flops(self, resolution):
@@ -206,8 +228,12 @@ class ResK1DWK1(nn.Module):
         for the_block in self.block_list:
             output = the_block(output, skip_bn=skip_bn)
             if not skip_relu: output = self.activation_function(output)
-            output_std_block *= output.std()
-            output = output/output.std()
+            if "init_std_act" in kwarg and hasattr(self, "nbitsA"):
+                output_std_block *= output.std()/kwarg["init_std_act"]
+                output = output/(output.std()/kwarg["init_std_act"])
+            else:
+                output_std_block *= output.std()
+                output = output/output.std()
         output_std_list.append(output_std_block)
         return output, output_std_list
 
@@ -216,6 +242,36 @@ class ResK1DWK1(nn.Module):
         return [self.bottleneck_channels, self.bottleneck_channels, self.out_channels]
 
 
+    def get_log_zen_score(self, **kwarg):
+        if "init_std" in kwarg and "init_std_act" in kwarg and hasattr(self, "nbitsA"):
+            conv1_std = np.log(STD_BITS_LUT[kwarg["init_std_act"]][self.nbitsA[0]]*STD_BITS_LUT[kwarg["init_std"]][self.nbitsW[0]])-np.log(kwarg["init_std_act"])
+            conv2_std = np.log(STD_BITS_LUT[kwarg["init_std_act"]][self.nbitsA[1]]*STD_BITS_LUT[kwarg["init_std"]][self.nbitsW[1]])-np.log(kwarg["init_std_act"])
+            conv3_std = np.log(STD_BITS_LUT[kwarg["init_std_act"]][self.nbitsA[2]]*STD_BITS_LUT[kwarg["init_std"]][self.nbitsW[2]])-np.log(kwarg["init_std_act"])
+
+            return [np.log(np.sqrt(self.in_channels)) + conv1_std + \
+                    np.log(np.sqrt(self.kernel_size ** 2)) + conv2_std + \
+                    np.log(np.sqrt(self.bottleneck_channels))+conv3_std]
+        else:
+            return [np.log(np.sqrt(self.in_channels)) + \
+                np.log(np.sqrt(self.kernel_size ** 2)) + \
+                np.log(np.sqrt(self.bottleneck_channels))]
+
+
+    def get_max_feature_num(self, resolution, nbitsA_out=8):
+        if self.is_reslink:
+            residual_featmap = resolution**2*self.out_channels//(self.stride**2)
+        else:
+            residual_featmap = 0
+        if self.quant:
+            residual_featmap = residual_featmap * self.nbitsA[0] / 8
+        conv1_max_featmap = self.conv1.get_max_feature_num(resolution, nbitsA_out=self.nbitsA[1])
+        conv2_max_featmap = self.conv2.get_max_feature_num(resolution, nbitsA_out=self.nbitsA[2]) + residual_featmap
+        conv3_max_featmap = self.conv3.get_max_feature_num(resolution//self.stride, nbitsA_out=nbitsA_out)
+        max_featmap_list = [conv1_max_featmap, conv2_max_featmap, conv3_max_featmap]
+
+        return max_featmap_list
+
+        
 class SuperResK1DWK1(BaseSuperBlock):
     def __init__(self, structure_info, no_create=False,
                  dropout_channel=None, dropout_layer=None,

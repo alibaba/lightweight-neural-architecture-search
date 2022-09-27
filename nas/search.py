@@ -58,7 +58,7 @@ def __check_block_structure_info_list_valid__(block_structure_info_list, cfg):
 
         if "L" not in block_structure_info.keys():
             layers += 1
-        elif block_structure_info['L'] == "SuperResConvKXKX":
+        elif block_structure_info['class'] == "SuperResConvKXKX":
             layers += block_structure_info['L']*2
         else:
             layers += block_structure_info['L']*3
