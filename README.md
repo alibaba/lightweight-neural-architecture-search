@@ -186,6 +186,8 @@ If you find this useful, please support us by citing it.
 |Mixed19d2G|3.2|18.8|74.80%|[txt](scripts/quant/models/mixed7d0G.txt) |[model](https://idstcv.oss-cn-zhangjiakou.aliyuncs.com/LightNAS/quant/mixed-7d0G/quant_238_70.7660.pth.tar) |
 |Mixed7d0G|2.2|6.9|70.80%|[txt](scripts/quant/models/mixed19d2G.txt) |[model](https://idstcv.oss-cn-zhangjiakou.aliyuncs.com/LightNAS/quant/mixed-19d2G/quant_237_74.8180.pth.tar) |
 
+The ImageNet training pipeline can be found at [https://github.com/tinyvision/imagenet-training-pipeline ](https://github.com/tinyvision/imagenet-training-pipeline)
+
 **Note**:
 If you find this useful, please support us by citing it.
 ```
