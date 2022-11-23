@@ -237,6 +237,8 @@ class OpProfiler():
             filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "%s/conv_data.out"%(device_name))
         elif date_type=="FP16":
             filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "%s/conv_data.out.fp16"%(device_name))
+        elif date_type=="FP16_DAMOYOLO":
+            filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "%s/conv_data.out.fp16.damoyolo" % (device_name))
         elif date_type=="INT8":
             filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "%s/conv_data.out.int8"%(device_name))
         elif date_type=="INT4":
