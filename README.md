@@ -1,6 +1,7 @@
 ## News
 
 - **:sunny: Hiring research interns for Neural Architecture Search, Tiny Machine Learning, Computer Vision tasks: [xiuyu.sxy@alibaba-inc.com](xiuyu.sxy@alibaba-inc.com)**
+- :boom: 2022.11: [**MAE-NAS backbone for DAMO-YOLO**](scripts/damo-yolo/Tutorial_NAS_for_DAMO-YOLO_cn.md) is now supported! The [**DAMO-YOLO**](https://github.com/tinyvision/DAMO-YOLO) paper is on [ArXiv](https://arxiv.org/abs/2211.15444) now.
 - :boom: 2022.09: [**Mixed-Precision Quantization**](scripts/quant/README.md) is now supported! The [**QE-Score**]() paper is accepted by NeurIPS'22.
 - :boom: 2022.06: Code for [**MAE-DET**](scripts/detection/README.md) is now released.
 - :boom: 2022.05: [**MAE-DET**](https://proceedings.mlr.press/v162/sun22c/sun22c.pdf) is accepted by ICML'22.
@@ -47,11 +48,11 @@ See the [NOTICE](NOTICE) file for more information.
 
 ***
 ## Changelog
-**1.0.2** was released in 2022/09/19:
+**1.0.3** was released in 2022/11/30:
 
-* Support madnas score for training-free search.
-* Support mixed-precision Quantization tasks.
-* Update the searched mixed-precision models.
+* Support MAE-NAS for [DAMO-YOLO](https://github.com/tinyvision/DAMO-YOLO).
+* Add 2 new blocks: k1kx and kxkx.
+* Add a [tutorial](scripts/damo-yolo/Tutorial_NAS_for_DAMO-YOLO_cn.md) on *NAS for DAMO-YOLO*.
 
 Please refer to [changelog.md](docs/changelog.md) for details and release history.
 
@@ -186,8 +187,6 @@ If you find this useful, please support us by citing it.
 |Mixed19d2G|3.2|18.8|74.80%|[txt](scripts/quant/models/mixed7d0G.txt) |[model](https://idstcv.oss-cn-zhangjiakou.aliyuncs.com/LightNAS/quant/mixed-7d0G/quant_238_70.7660.pth.tar) |
 |Mixed7d0G|2.2|6.9|70.80%|[txt](scripts/quant/models/mixed19d2G.txt) |[model](https://idstcv.oss-cn-zhangjiakou.aliyuncs.com/LightNAS/quant/mixed-19d2G/quant_237_74.8180.pth.tar) |
 
-The ImageNet training pipeline can be found at [https://github.com/tinyvision/imagenet-training-pipeline ](https://github.com/tinyvision/imagenet-training-pipeline)
-
 **Note**:
 If you find this useful, please support us by citing it.
 ```
@@ -202,4 +201,4 @@ If you find this useful, please support us by citing it.
 ***
 ## Main Contributors
 
-[Zhenhong Sun](https://sites.google.com/view/sunzhenhong), [Ming Lin](https://minglin-home.github.io), [Xiuyu Sun](https://sites.google.com/view/sunxiuyu), [Hesen Chen](https://scholar.google.com/citations?user=75v6J-cAAAAJ), [Ce Ge](https://scholar.google.com/citations?user=VUOriGkAAAAJ).
+[Zhenhong Sun](https://sites.google.com/view/sunzhenhong), [Ming Lin](https://minglin-home.github.io), [Xiuyu Sun](https://sites.google.com/view/sunxiuyu), [Hesen Chen](https://scholar.google.com/citations?user=75v6J-cAAAAJ), [Ce Ge](https://scholar.google.com/citations?user=VUOriGkAAAAJ), [Yilun Huang](https://hylcool.github.io/).

@@ -1,5 +1,12 @@
 ## Changelog
 
+***
+**1.0.3** was released in 2022/11/30:
+
+* Support MAE-NAS for [DAMO-YOLO](https://github.com/tinyvision/DAMO-YOLO).
+* Add 2 new blocks: k1kx and kxkx.
+* Add a [tutorial](scripts/damo-yolo/Tutorial_NAS_for_DAMO-YOLO_cn.md) on *NAS for DAMO-YOLO*.
+
 
 ***
 **1.0.2** was released in 2022/09/19:

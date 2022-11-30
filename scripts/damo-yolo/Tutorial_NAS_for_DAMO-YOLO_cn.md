@@ -128,6 +128,7 @@ sh example_k1kx_small.sh
     - [tinynas_res.py](https://github.com/tinyvision/DAMO-YOLO/blob/master/damo/base_models/backbones/tinynas_res.py) ：只带有Focus、SPP等模块的wrapper版本，用于T和S模型
     - [tinynas_csp.py](https://github.com/tinyvision/DAMO-YOLO/blob/master/damo/base_models/backbones/tinynas_csp.py) ：额外带有CSP模块的wrapper版本，用于M模型
     - 已搜索好的不同scale的结构文件可见[此处](https://github.com/tinyvision/DAMO-YOLO/tree/master/damo/base_models/backbones/nas_backbones)
+    - 注：搜索结果结构在使用时需要手动将第一个stage的`ConvKXBNRELU`中的`in`字段从12修改为3（可参考上方搜索结果示例），具体原因与细节可参考[搜索脚本添加过程](#添加过程-1)的第2、4两步
   - 性能验证：将其替换yolox-s的backbone后性能如下：
     - 可以看到，根据本教程搜索到的backbone，经过wrapper包装后，最终性能和速度均可优于原yolox-s模型
 
@@ -861,4 +862,4 @@ mpirun --allow-run-as-root -np 64 -H 127.0.0.1:64 -bind-to none -map-by slot -mc
 
 ![image.png](https://intranetproxy.alipay.com/skylark/lark/0/2022/png/26556813/1665650924550-57c7215a-b2cc-4865-a5a8-c18d39ed51fe.png#clientId=uf122ab90-842b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=116&id=u717fd2e9&margin=%5Bobject%20Object%5D&name=image.png&originHeight=150&originWidth=625&originalType=binary&ratio=1&rotation=0&showTitle=false&size=25952&status=done&style=none&taskId=u4e507baf-c8ec-4c38-b03c-1b11ee7d3f8&title=&width=481.5)
 
-- 最后，就可以按照[DAMO-YOLO backbone结构搜索](#DAMO-YOLO backbone结构搜索)章节的内容进行搜索了
+- 最后，就可以按照[DAMO-YOLO backbone结构搜索](#DAMO-YOLO-backbone结构搜索)章节的内容进行搜索了
