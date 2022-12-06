@@ -2,7 +2,7 @@
 
 - **:sunny: Hiring research interns for Neural Architecture Search, Tiny Machine Learning, Computer Vision tasks: [xiuyu.sxy@alibaba-inc.com](xiuyu.sxy@alibaba-inc.com)**
 - :boom: 2022.11: [**MAE-NAS backbone for DAMO-YOLO**](scripts/damo-yolo/Tutorial_NAS_for_DAMO-YOLO_cn.md) is now supported! The [**DAMO-YOLO**](https://github.com/tinyvision/DAMO-YOLO) paper is on [ArXiv](https://arxiv.org/abs/2211.15444) now.
-- :boom: 2022.09: [**Mixed-Precision Quantization**](scripts/quant/README.md) is now supported! The [**QE-Score**]() paper is accepted by NeurIPS'22.
+- :boom: 2022.09: [**Mixed-Precision Quantization**](scripts/quant/README.md) is now supported! The [**QE-Score**](https://openreview.net/pdf?id=E28hy5isRzC) paper is accepted by NeurIPS'22.
 - :boom: 2022.06: Code for [**MAE-DET**](scripts/detection/README.md) is now released.
 - :boom: 2022.05: [**MAE-DET**](https://proceedings.mlr.press/v162/sun22c/sun22c.pdf) is accepted by ICML'22.
 - :boom: 2021.09: Code for [**Zen-NAS**](https://github.com/idstcv/ZenNAS) is now released.
