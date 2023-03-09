@@ -1,0 +1,7 @@
+{ 'best_structures':[ [ 
+                    {'class': 'ConvKXBNRELU', 'in': 3, 'out': 32, 's': 2, 'k': 3},
+                    {'class': 'SuperResK1KXK1', 'in': 32, 'out': 48, 's': 2, 'k': 5, 'L': 2, 'btn': 32},
+                    {'class': 'SuperResK1KXK1', 'in': 48, 'out': 272, 's': 2, 'k': 3, 'L': 4, 'btn': 120},
+                    {'class': 'SuperResK1KXK1', 'in': 272, 'out': 1024, 's': 2, 'k': 5, 'L': 10, 'btn': 80},
+                    {'class': 'SuperResK1KXK1', 'in': 1024, 'out': 2048, 's': 2, 'k': 3, 'L': 10, 'btn': 240}]],
+'space_arch': 'CnnNet'}  

@@ -18,19 +18,19 @@ Apache License 2.0 License
 ============================
 
 configs/config_base.py
-Copyright (c) 2014-2021 Megvii Inc. 
+Copyright (c) 2014-2021 Megvii Inc.
 All rights reserved.
 
 configs/dict_action.py
-Copyright (c) 2018-2022 Open-MMLab. 
+Copyright (c) 2018-2022 Open-MMLab.
 All rights reserved.
 
 scripts/detection/models/gfocal_maedet/gfocal_r50_fpn_ms6x.py
-Copyright (c) 2018-2019 Open-MMLab. 
+Copyright (c) 2018-2019 Open-MMLab.
 All rights reserved.
 
 
-Packages installed by codes or PIP.
+Packages installed by codes, conda or PIP.
 ============================
 OpenMPI's 3-clause BSD license
 ============================
@@ -266,30 +266,11 @@ POSSIBILITY OF SUCH DAMAGE.
 ============================
 BSD License
 ============================
-mpi4py==3.0.3
+mpi4py
 scipy==1.5.4
-
-============================
-3-Clause BSD License
-============================
-prettytable==2.0.0
-protobuf==3.19.1
-
-============================
-Apache Software License
-============================
-Cython==0.29.24
-
-============================
-Apache License 2.0 License
-============================
-cmake==3.22.1
 
 ============================
 MIT License
 ============================
-scikit-build==0.12.0
-pytest-runner==5.3.1
 tabulate==0.8.9
 thop==0.0.31
-opencv-python==4.5.4.60

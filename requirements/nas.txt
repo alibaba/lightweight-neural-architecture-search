@@ -1,0 +1,15 @@
+braceexpand
+dataclasses
+easydict
+filelock
+ftfy
+regex
+requests
+scipy==1.5.4
+tabulate==0.8.9
+thop>=0.0.31
+tqdm
+addict
+yapf
+packaging
+importlib_metadata
