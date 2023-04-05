@@ -7,4 +7,5 @@ from .compute_madnas import ComputeMadnasScore
 from .compute_random import ComputeRandomScore
 from .compute_ensemble import ComputeEnsembleScore
 from .compute_deepmad import ComputeDeepMadScore
+from .compute_stentr import ComputeStentrScore
 

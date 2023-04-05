@@ -9,4 +9,5 @@ from .space_k1dwk1 import Spacek1dwk1
 from .space_k1dwsek1 import Spacek1dwsek1
 from .space_k1kx import Spacek1kx
 from .space_kxkx import Spacekxkx
+from .space_3d_k1dwk1 import Space3Dk1dwk1
 from .space_quant_k1dwk1 import SpaceQuantk1dwk1
