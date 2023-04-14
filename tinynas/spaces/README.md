@@ -10,3 +10,4 @@
 * `space_k1kx.py`: Base small and tiny DAMO-YOLO search space.
 * `space_kxkx.py`: Base medium DAMO-YOLO search space.
 * `space_quant_k1dwk1.py`: Base search space for Quantization search.
+* `space_3d_k1dwk1.py`: Base search space for 3D CNN search.

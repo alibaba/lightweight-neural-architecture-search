@@ -17,7 +17,7 @@ The basic network (supernet) is defined by the unified framework with the struct
 ```
 ***
 ### **Supported Blocks**
-`Supported 2D blocks:`
+`Supported 2D CNN blocks:`
 ```
 __all_blocks__ = {
     'ConvKXBN': ConvKXBN,
@@ -36,6 +36,17 @@ __all_blocks__ = {
     'SuperQuantResK1DWK1': SuperQuantResK1DWK1,
 } 
 ```
+`Supported 3D CNN blocks:`
+
+```
+__all_blocks_3D__ = {
+    'Conv3DKXBN': Conv3DKXBN,
+    'Conv3DKXBNRELU': Conv3DKXBNRELU,
+    'BaseSuperBlock3D': BaseSuperBlock3D,
+    'Res3DK1DWK1': Res3DK1DWK1,
+    'SuperRes3DK1DWK1': SuperRes3DK1DWK1,
+}
+```
 **Note**:
 
 - `BaseSuperBlock` is the basic class for super block.
@@ -45,7 +56,7 @@ __all_blocks__ = {
 - `SuperResK1KX` is the derived class from ``BaseSuperBlock`` to unit `L` class `ResK1KX`.
 - `SuperResKXKX` is the derived class from ``BaseSuperBlock`` to unit `L` class `ResKXKX`.
 - `SuperQuantResK1DWK1` is the derived class from ``SuperResK1DWK1``.
-
+- `SuperRes3DK1DWK1` is the derived class from ``BaseSuperBlock`` to unit `L` class `Res3DK1DWK1`.
 ***
 ### **Useful functions for masternet**
 
@@ -66,5 +77,7 @@ __all_blocks__ = {
 `madnas_forward_pre_GAP`: Get the madnas score of the network, which does not need forward on GPU and has very fast speed .
 
 `deepmad_forward_pre_GAP`: Get the deepmad score of the network, which does not need forward on GPU and has very fast speed. 
+
+`stentr_forward_pre_GAP`: Get the spatio-temporal entropy score of the network, which does not need forward on GPU and has very fast speed.
 
 ***

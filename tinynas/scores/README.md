@@ -13,3 +13,7 @@ Random generated scores for debug.
 
 ### **Ensemble Score**:
 Calculate combinated score of multiple score_type with ratio.
+
+
+### **STEntr Score**:
+Calculate spatio-temporal entropy score.

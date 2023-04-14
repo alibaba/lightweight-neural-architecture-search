@@ -10,14 +10,15 @@
 
 - **:sunny: Hiring research interns for Neural Architecture Search, Tiny Machine Learning, Computer Vision tasks: [xiuyu.sxy@alibaba-inc.com](xiuyu.sxy@alibaba-inc.com)**
 - :boom: 2023.04: We will give a talk on Zero-Cost NAS at [**IFML Workshop**](https://www.ifml.institute/events/ifml-workshop-2023), April 20, 2023.
+- :boom: 2023.03: Code for [**E3D**](configs/action_recognition/README.md) is now released.
 - :boom: 2023.03: The code is refactoried and DeepMAD is supported.
 - :boom: 2023.03: [**DeepMAD: Mathematical Architecture Design for Deep Convolutional Neural Network**](https://arxiv.org/abs/2303.02165) is accepted by CVPR'23.
 - :boom: 2023.02: A demo is available on [**ModelScope**](https://modelscope.cn/studios/damo/TinyNAS/summary)
 - :boom: 2023.01: [**Maximizing Spatio-Temporal Entropy of Deep 3D CNNs for Efficient Video Recognition**](https://openreview.net/pdf?id=lj1Eb1OPeNw) is accepted by ICLR'23.
 - :boom: 2022.11: [**DAMO-YOLO**](https://github.com/tinyvision/DAMO-YOLO) backbone search is now supported! And paper is on [ArXiv](https://arxiv.org/abs/2211.15444) now.
-- :boom: 2022.09: [**Mixed-Precision Quantization Search**](scripts/quant/README.md) is now supported! The [**QE-Score**](https://openreview.net/pdf?id=E28hy5isRzC) paper is accepted by NeurIPS'22.
+- :boom: 2022.09: [**Mixed-Precision Quantization Search**](configs/quant/README.md) is now supported! The [**QE-Score**](https://openreview.net/pdf?id=E28hy5isRzC) paper is accepted by NeurIPS'22.
 - :boom: 2022.08: We will give a tutorial on [**Functional View for Zero-Shot NAS**](https://mlsys.org/virtual/2022/tutorial/2201) at MLSys'22.
-- :boom: 2022.06: Code for [**MAE-DET**](scripts/detection/README.md) is now released.
+- :boom: 2022.06: Code for [**MAE-DET**](configs/detection/README.md) is now released.
 - :boom: 2022.05: [**MAE-DET**](https://proceedings.mlr.press/v162/sun22c/sun22c.pdf) is accepted by ICML'22.
 - :boom: 2021.09: Code for [**Zen-NAS**](https://github.com/idstcv/ZenNAS) is now released.
 - :boom: 2021.07: The inspiring training-free paper [**Zen-NAS**](https://openaccess.thecvf.com/content/ICCV2021/papers/Lin_Zen-NAS_A_Zero-Shot_NAS_for_High-Performance_Image_Recognition_ICCV_2021_paper.pdf) has been accepted by ICCV'21.
@@ -33,7 +34,8 @@
     - [Budgets module](tinynas/budgets/README.md)
     - [Latency Module](tinynas/latency/op_profiler/README.md)
     - [Population module](tinynas/evolutions/README.md)
-  It manages these modules with the help of [ModelScope](https://github.com/modelscope/modelscope) Registry and Configuration mechanism.
+
+It manages these modules with the help of [ModelScope](https://github.com/modelscope/modelscope) Registry and Configuration mechanism.
 
 - The `Searcher` is defined to be responsible for building and completing the entire search process. Through the combination of these modules and the corresponding configuration files, we can complete backbone search for different tasks (such as classification, detection, etc.) under different budget constraints (such as the number of parameters, FLOPs, delay, etc.).
 
@@ -89,6 +91,18 @@
 | MAE-DET-M | 25.8 |    89.9    |  46.9 | 30.1 | 50.9 | 59.9  | [txt](configs/detection/models/maedet_m.txt)       |[model](https://idstcv.oss-cn-zhangjiakou.aliyuncs.com/LightNAS/detection/maedet-m/latest.pth) |
 | MAE-DET-L | 43.9 |    152.9   |  47.8 | 30.3 | 51.9 | 61.1  | [txt](configs/detection/models/maedet_l.txt)      |[model](https://idstcv.oss-cn-zhangjiakou.aliyuncs.com/LightNAS/detection/maedet-l/latest.pth) |
 
+***
+## Results for Action Recognition ([Details](configs/action_recognition/README.md)）
+
+| Backbone  | size   |  FLOPs (G) |  SSV1 Top-1 | SSV1 Top-5 | Structure | 
+|:---------:|:-------:|:-------:|:-------:|:-------:|:--------:|
+| X3D-S | 160 |    1.9     |   44.6  | 74.4| -     |
+| X3D-S | 224 |    1.9     |   47.3  | 76.6| -     |
+| E3D-S | 160 |    1.9     |   47.1  | 75.6| [txt](configs/action_recognition/models/E3D_S.txt)       |
+| E3D-M  | 224 |     4.7     |   49.4  | 78.1| [txt](configs/action_recognition/models/E3D_M.txt)       |
+| E3D-L  | 312 |     18.3     |   51.1  | 78.7| [txt](configs/action_recognition/models/E3D_L.txt)       |
+
+***
 **Note**：
 If you find this useful, please support us by citing them.
 ```

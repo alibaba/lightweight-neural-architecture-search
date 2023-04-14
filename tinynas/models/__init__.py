@@ -4,3 +4,4 @@
 
 from .builder import build_model
 from .cnnnet import CnnNet
+from .cnn3dnet import Cnn3DNet

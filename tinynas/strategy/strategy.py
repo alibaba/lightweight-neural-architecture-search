@@ -121,6 +121,8 @@ class Strategy(metaclass=ABCMeta):
             kwargs = {}
             if key in {'flops', 'max_feature'}:
                 kwargs['resolution'] = self.cfg.image_size
+                if 'frames' in self.cfg:
+                    kwargs['frames'] = self.cfg.frames
             if key in {'latency'}:
                 kwargs['latency_func'] = self.latency_func
             model_info[key] = getattr(model, 'get_' + key)(**kwargs)
