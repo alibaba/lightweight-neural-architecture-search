@@ -2,7 +2,7 @@
 # The implementation is also open-sourced by the authors, and available at
 # https://github.com/alibaba/lightweight-neural-architecture-search.
 
-work_dir = './save_mode/E3DS_FLOPs_20e8/'
+work_dir = './save_model/E3DS_FLOPs_20e8/'
 log_level = 'INFO'  # INFO/DEBUG/ERROR
 log_freq = 1000
 

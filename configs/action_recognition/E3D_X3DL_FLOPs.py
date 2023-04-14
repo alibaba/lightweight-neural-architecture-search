@@ -2,8 +2,8 @@
 # The implementation is also open-sourced by the authors, and available at
 # https://github.com/alibaba/lightweight-neural-architecture-search.
 
-work_dir = './save_mode/E3DM_FLOPs_185e8/'
-log_level = 'DEBUG'  # INFO/DEBUG/ERROR
+work_dir = './save_model/E3DM_FLOPs_185e8/'
+log_level = 'INFO'  # INFO/DEBUG/ERROR
 log_freq = 1000
 
 """ video config """
