@@ -9,6 +9,7 @@
 ## News
 
 - **:sunny: Hiring research interns for Neural Architecture Search, Tiny Machine Learning, Computer Vision tasks: [xiuyu.sxy@alibaba-inc.com](xiuyu.sxy@alibaba-inc.com)**
+- :boom: 2023.04: We will give a talk on Zero-Cost NAS at [**IFML Workshop**](https://www.ifml.institute/events/ifml-workshop-2023), April 20, 2023.
 - :boom: 2023.03: Code for [**E3D**](configs/action_recognition/README.md) is now released.
 - :boom: 2023.03: The code is refactoried and DeepMAD is supported.
 - :boom: 2023.03: [**DeepMAD: Mathematical Architecture Design for Deep Convolutional Neural Network**](https://arxiv.org/abs/2303.02165) is accepted by CVPR'23.
