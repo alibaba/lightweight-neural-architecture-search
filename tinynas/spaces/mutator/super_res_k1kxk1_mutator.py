@@ -55,6 +55,9 @@ class SuperResK1KXK1Mutator():
             new_out = self.channel_mutator(structure_info['out'])
             # Add the constraint: output_channel <= 4*input_channel
             new_out = min(4 * structure_info['in'], new_out)
+            new_out = max(structure_info['in'], new_out)
+            if block_id < len(structure_info_list) - 1:
+                new_out = min(structure_info_next['out'], new_out)
             # add the constraint: next block, input_channel>output_channel/4.
             if block_id < len(
                     structure_info_list) - 1 and new_out < smart_round(
