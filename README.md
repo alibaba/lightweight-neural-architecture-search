@@ -9,6 +9,7 @@
 ## News
 
 - **:sunny: Hiring research interns for Neural Architecture Search, Tiny Machine Learning, Computer Vision tasks: [xiuyu.sxy@alibaba-inc.com](xiuyu.sxy@alibaba-inc.com)**
+- :boom: 2023.04: **PreNAS: Preferred One-Shot Learning Towards Efficient Vision Transformer Search** is accepted by ICML'23.
 - :boom: 2023.04: We will give a talk on Zero-Cost NAS at [**IFML Workshop**](https://www.ifml.institute/events/ifml-workshop-2023), April 20, 2023.
 - :boom: 2023.03: Code for [**E3D**](configs/action_recognition/README.md) is now released.
 - :boom: 2023.03: The code is refactoried and DeepMAD is supported.
@@ -112,6 +113,14 @@ If you find this useful, please support us by citing them.
 	booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
 	year = {2023},
 	url = {https://arxiv.org/abs/2303.02165}
+}
+
+@inproceedings{icml23prenas,
+	title={PreNAS: Preferred One-Shot Learning Towards Efficient Vision Transformer Search},
+	author={Haibin Wang and Ce Ge and Hesen Chen and Xiuyu Sun},
+	booktitle={International Conference on Machine Learning},
+	year={2023},
+	organization={PMLR}
 }
 
 @inproceedings{iclr23maxste,
