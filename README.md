@@ -116,7 +116,7 @@ If you find this useful, please support us by citing them.
 }
 
 @inproceedings{icml23prenas,
-	title={PreNAS: Preferred One-Shot Learning Towards Efficient Vision Transformer Search},
+	title={PreNAS: Preferred One-Shot Learning Towards Efficient Neural Architecture Search},
 	author={Haibin Wang and Ce Ge and Hesen Chen and Xiuyu Sun},
 	booktitle={International Conference on Machine Learning},
 	year={2023},
