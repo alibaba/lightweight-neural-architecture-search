@@ -9,7 +9,7 @@
 ## News
 
 - **:sunny: Hiring research interns for Neural Architecture Search, Tiny Machine Learning, Computer Vision tasks: [xiuyu.sxy@alibaba-inc.com](xiuyu.sxy@alibaba-inc.com)**
-- :boom: 2023.04: [**PreNAS: Preferred One-Shot Learning Towards Efficient Vision Transformer Search**](https://arxiv.org/abs/2304.14636) is accepted by ICML'23.
+- :boom: 2023.04: [**PreNAS: Preferred One-Shot Learning Towards Efficient Neural Architecture Search**](https://arxiv.org/abs/2304.14636) is accepted by ICML'23.
 - :boom: 2023.04: We will give a talk on Zero-Cost NAS at [**IFML Workshop**](https://www.ifml.institute/events/ifml-workshop-2023), April 20, 2023.
 - :boom: 2023.03: Code for [**E3D**](configs/action_recognition/README.md) is now released.
 - :boom: 2023.03: The code is refactoried and DeepMAD is supported.
